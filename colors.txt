@@ -1,0 +1,40 @@
+wood/wood_log
+	dark - 664400
+	light - 996600
+bear_rug
+	fur - 331a00
+	claws - f2f2f2
+	mouth - ff0000
+	outline - 000000
+box
+	dark - 804000
+	light - ac7339
+brick
+	brick - aa3000
+	cement - ddbfbf
+wood_pile - 
+	dark - 4d3300
+	medium dark - 664400
+	medium light - 805500
+	light - 996600
+fire
+	orange - ff6600
+	yellow - e6e600
+grass
+	dark - 1f7a1f
+	light - 2aa22a
+player
+	dark - b30000
+	light - e60000
+smoke - f2f2f2
+stone
+	dark - a6a6a6
+	light - bfbfbf
+tree
+	dark - 155115
+	medium - 1f7a1f
+	light - 2aa22a
+door
+	knob - ffcc00
+	dark - 664400
+	light - 996600
