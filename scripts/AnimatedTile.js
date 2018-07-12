@@ -4,10 +4,13 @@ class AnimatedTile extends Tile{
 		this.frames = frames;
 		this.frame = 0;
 		this.time = time;
-		this.last = performance.now();
 		this.frameTime = this.time / this.frames;
-		if(extra && extra.delta)
-			this.last -= extra.delta;
+		
+		if(!extra.fromSheet)
+			this.setFrame();
+	}
+	async start(time){
+		await sleep(time - performance.now());
 		this.setFrame();
 	}
 	async setFrame(){
@@ -27,11 +30,17 @@ function AnimatedTileSheet(frames, time, src, x, y, w, h, extra){
 	this.create = function(frames, time, src, x, y, w, h, extra){
 		extra.grid = true;
 		var tiles = [], start = performance.now();
-		for(var i = 0; i < h; i++)
+		for(var i = 0; i < h; i++){
 			for(var j = 0; j < w; j++){
 				extra.delta = performance.now() - start;
-				tiles.push(new AnimatedTile(frames, time, src, x + j, y + i, extra));
+				extra.fromSheet = true;
+				
+				var tile = new AnimatedTile(frames, time, src, x + j, y + i, extra);
+				tile.start(start + 100);
+				tiles.push(tile);
 			}
+		}
+		console.log(performance.now() - start);
 				
 		if(extra.surround){
 			new TileStretch("", x - 1, y - 1, w + 2, 1, {rigid: true});	//top
