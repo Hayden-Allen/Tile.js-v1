@@ -21,18 +21,19 @@ class Camera {
 		}
 							
 		var render = function(o){
-						if(o !== self.follow.rect){
-							if(o.update)
-								o.update(offx, offy);
-							else if(o instanceof AnimatedTile){
-								o.draw(offx, offy, performance.now() - (performance.now() - start));
-							}
-							else
-								o.draw(offx, offy);
-						}
-					}
+			if(o !== self.follow.rect && o.wx + o.w + offx > 0 && o.wx + offx < c.width && o.wy + o.h +offy > 0 && o.wy + offy < c.height){
+				count++;
+				if(o.update)
+					o.update(offx, offy);
+				else if(o instanceof AnimatedTile){
+					o.draw(offx, offy, start);
+				}
+				else
+					o.draw(offx, offy);
+			}
+		}
 		
-		var start = performance.now();
+		var start = performance.now(), count = 0;
 		currentScene.layers[0].forEach(render);
 		
 		this.follow.rect.draw(offx, offy);
@@ -76,5 +77,6 @@ class Camera {
 			else if(!d.usable)
 				d.usable = true;
 		});
+		return count;
 	}
 }
