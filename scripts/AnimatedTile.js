@@ -5,6 +5,7 @@ class AnimatedTile extends Tile{
 		this.frame = 0;
 		this.time = time;
 		this.last = performance.now();
+		this.frameTime = this.time / this.frames;
 		if(extra && extra.delta)
 			this.last -= extra.delta;
 	}
@@ -14,7 +15,7 @@ class AnimatedTile extends Tile{
 		else
 			ctx.drawImage(this.img, this.x + offx, this.y + offy, this.w, this.h, this.frame * tilesize, 0, tilesize, tilesize);
 			
-		if(time - this.last >= this.time / this.frames){
+		if(time - this.last >= this.frameTime){
 			this.last = time;
 			this.frame = (this.frame + 1) % this.frames;
 		}
@@ -22,7 +23,7 @@ class AnimatedTile extends Tile{
 }
 
 function AnimatedTileSheet(frames, time, src, x, y, w, h, extra){
-	this.create = function(frames, time, src, x, y, w, h, rigid){
+	this.create = function(frames, time, src, x, y, w, h, extra){
 		extra.grid = true;
 		var tiles = [], start = performance.now();
 		for(var i = 0; i < h; i++)

@@ -84,6 +84,12 @@ function Scene(lightMin){
 					self.lightMap[i][j] = Math.abs(self.lightMap[i][j]);
 		//console.log(this.lightMap);
 		this.doors.forEach(function(d){
+			var index;
+			for(var i = 0; i < self.layers.length && index === undefined; i++)
+				for(var j = 0; j < self.layers[i].length && index === undefined; j++)
+					if(self.layers[i][j] === d.tile)
+						index = {x: j, y: i};
+			self.layers[index.y].splice(index.x, 1);
 			self.layers[self.layers.length - 1].push(d.tile);
 		});
 	}

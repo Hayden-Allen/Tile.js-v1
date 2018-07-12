@@ -105,6 +105,7 @@ console.log(scene1.layers[0].length);
 
 
 var debugObj = new DebugInfo(0, 0, 0, 0), lastTime = performance.now();
+var minSprites = Number.MAX_SAFE_INTEGER, maxSprites = 0;
 function update(){
 	requestAnimationFrame(update);
 	
@@ -113,8 +114,12 @@ function update(){
 		ctx.fillRect(0, 0, c.width, c.height);
 		
 		var sprites = camera.update();
+		if(sprites < minSprites)
+			minSprites = sprites;
+		if(sprites > maxSprites)
+			maxSprites = sprites;
 		
-		debugObj.update(player.rect.x, player.rect.y, sprites, 1000 / (performance.now() - lastTime));
+		debugObj.update(player.rect.x, player.rect.y, sprites, minSprites, maxSprites, 1000 / (performance.now() - lastTime));
 		lastTime = performance.now();
 		debug("debug", debugObj.string());
 		

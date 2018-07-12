@@ -57,21 +57,26 @@ class Camera {
 			
 			if(x + w > dx && x < dx + dw && y + h > dy && y < dy + dh){
 				if(d.usable && d.from === currentScene){
-					fade(100, "#000000");
+					await fade(100, "#000000");
 					
 					currentScene = d.to;
 					d.usable = false;
 					self.rect.x = dx;
 					self.rect.y = dy;
 					
+					maxSprites = 0;
+					minSprites = Number.MAX_SAFE_INTEGER;
 				}
 				else if(d.usable && d.to === currentScene){
-					fade(100, "#000000");
+					await fade(100, "#000000");
 					
 					currentScene = d.from;
 					d.usable = false;
 					self.rect.x = dx;
 					self.rect.y = dy;
+					
+					maxSprites = 0;
+					minSprites = Number.MAX_SAFE_INTEGER;
 				}
 			}
 			else if(!d.usable)
