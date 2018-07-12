@@ -51,10 +51,10 @@ var keys = new BitSet(0);
 var scene1 = new Scene(0);
 
 var currentScene = scene1;
-var player = new Player(new Tile("assets/tile/player.png", 200, 120, {grid: false}), 10);
+var player = new Player(new Tile("assets/tile/player.png", 640, 320, {grid: false}), 10);
 var camera = new Camera(player);
 
-new TileSheet("assets/tile/grass.png", 0, 0, 20, 16, {rigid: false, 
+new TileSheet("assets/tile/grass.png", 0, 0, 30, 16, {rigid: false, 
 				surround: {src: "assets/decoration/tree.png", extra: {rigid: true, w: 2, h: 2}}});			
 new TileSheet("assets/tile/brick.png", 10, 1, 1, 2, {rigid: true});
 new TileSheet("assets/tile/wood_log.png", 7, 2, 3, 1, {rigid: true});
@@ -72,6 +72,9 @@ new Tile("assets/decoration/campfire.png", 4, 10);
 
 new AnimatedTile(3, 250, "assets/animation/fire.png", 9, 8, {rigid: true, lightIntensity: 15});
 new AnimatedTile(3, 250, "assets/animation/fire.png", 4, 10, {rigid: true, lightIntensity: 15});
+new AnimatedTile(3, 250, "assets/animation/fire.png", 22, 4, {rigid: true, lightIntensity: 15});
+new AnimatedTile(3, 250, "assets/animation/fire.png", 22, 12, {rigid: true, lightIntensity: 15});
+
 new AnimatedTile(3, 1000, "assets/animation/smoke.png", 10, 0, {rigid: false, zindex: 1});
 
 new AnimatedTileSheet(3, 1000, "assets/animation/water.png", 5, 8, 4, 4, {rigid: true});
@@ -136,6 +139,13 @@ window.onkeydown = function(e){
 	case 65: keys.set(2, true); break;
 	case 83: keys.set(1, true); break;
 	case 68: keys.set(0, true); break;
+	case 187: 
+		var debug = document.getElementById("debug");
+		if(debug.style.visibility === "hidden")
+			debug.style.visibility = "visible";
+		else
+			debug.style.visibility = "hidden";
+	break;
 	}
 }
 window.onkeyup = function(e){

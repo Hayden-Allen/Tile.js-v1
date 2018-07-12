@@ -26,7 +26,7 @@ class Camera {
 				if(o.update)
 					o.update(offx, offy);
 				else if(o instanceof AnimatedTile){
-					o.draw(offx, offy, start);
+					o.draw(offx, offy);
 				}
 				else
 					o.draw(offx, offy);
@@ -37,8 +37,7 @@ class Camera {
 		currentScene.layers[0].forEach(render);
 		
 		this.follow.rect.draw(offx, offy);
-		
-		start = performance.now();
+	
 		for(var i = 1; i < currentScene.layers.length; i++)
 			currentScene.layers[i].forEach(render);
 			
