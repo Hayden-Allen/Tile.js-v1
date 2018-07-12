@@ -11,8 +11,14 @@ function DebugInfo(){
 	this.totalfps = 0;
 	this.updates = 1;
 	
+	this.pad = function(places, num){
+		var s = num + "";
+		while(s.length < places) s = "0" + s;
+		return s;
+	}
+	
 	var temp = new Date();
-	this.avgfpsstart = temp.getHours() + ":" + temp.getMinutes() + ":" + temp.getSeconds();
+	this.avgfpsstart = this.pad(2, temp.getHours()) + ":" + this.pad(2, temp.getMinutes()) + ":" + this.pad(2, temp.getSeconds());
 	
 	this.update = function(x, y, sprites, minSprites, maxSprites, fps){
 		this.x = x;
@@ -29,7 +35,7 @@ function DebugInfo(){
 			this.updates = 1;
 			this.totalfps = fps;
 			var temp = new Date();
-			this.avgfpsstart = temp.getHours() + ":" + temp.getMinutes() + ":" + temp.getSeconds();
+			this.avgfpsstart = this.pad(2, temp.getHours()) + ":" + this.pad(2, temp.getMinutes()) + ":" + this.pad(2, temp.getSeconds());
 		}
 		this.avgfps = Math.round(this.totalfps / this.updates);
 	}
