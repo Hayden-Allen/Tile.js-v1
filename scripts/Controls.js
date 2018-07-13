@@ -5,4 +5,3 @@ function Controls(obj, extra, on) {
 	this.locked = false;
 	controls.push(this);
 }
-			

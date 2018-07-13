@@ -5,8 +5,9 @@ class AnimatedTile extends Tile{
 		this.frame = 0;
 		this.time = time;
 		this.frameTime = this.time / this.frames;
+		this.cw = (extra && extra.cw ? extra.cw : tilesize);
 		
-		if(!extra.fromSheet)
+		if(!extra || (extra && !extra.fromSheet))
 			this.setFrame();
 	}
 	async start(time){
@@ -20,7 +21,7 @@ class AnimatedTile extends Tile{
 	}
 	draw(offx, offy){
 		if(this.grid)
-			ctx.drawImage(this.img, this.frame * tilesize, 0, tilesize, tilesize, this.x * tilesize + offx, this.y * tilesize + offy, this.w, this.h);
+			ctx.drawImage(this.img, this.frame * this.cw, 0, tilesize, tilesize, this.x * tilesize + offx, this.y * tilesize + offy, this.w, this.h);
 		else
 			ctx.drawImage(this.img, this.x + offx, this.y + offy, this.w, this.h, this.frame * tilesize, 0, tilesize, tilesize);
 	}
@@ -29,18 +30,20 @@ class AnimatedTile extends Tile{
 function AnimatedTileSheet(frames, time, src, x, y, w, h, extra){
 	this.create = function(frames, time, src, x, y, w, h, extra){
 		extra.grid = true;
-		var tiles = [], start = performance.now();
+		var tiles = [];
 		for(var i = 0; i < h; i++){
 			for(var j = 0; j < w; j++){
-				extra.delta = performance.now() - start;
 				extra.fromSheet = true;
 				
 				var tile = new AnimatedTile(frames, time, src, x + j, y + i, extra);
-				tile.start(start + 100);
+				//tile.start(start + 100);
 				tiles.push(tile);
 			}
 		}
-		console.log(performance.now() - start);
+		start = performance.now();
+		tiles.forEach(function(t){
+			t.start(start + (1000 - (performance.now() - start) * tiles.length));
+		});
 				
 		if(extra.surround){
 			new TileStretch("", x - 1, y - 1, w + 2, 1, {rigid: true});	//top

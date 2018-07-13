@@ -1,23 +1,20 @@
 class Player extends Character {
-	constructor(tile, speed){
-		super(tile, speed);
+	constructor(tile, speed, health){
+		super(tile, speed, health);
 		
 		this.controls = new Controls(this.rect, {speed: this.speed}, function(keys){
 			var speed = this.extra.speed;
-			if(Math.log2(keys.value) !== parseInt(Math.log2(keys.value)))
-				speed /= Math.sqrt(2);
+			if(!keys.log2())
+				speed /= sqrt2;
 		
 			if(keys.at(3))
-				this.obj.y -= speed;
+				this.obj.addY(-speed);
 			if(keys.at(2))
-				this.obj.x -= speed;
+				this.obj.addX(-speed);
 			if(keys.at(1))
-				this.obj.y += speed;
+				this.obj.addY(speed);
 			if(keys.at(0))
-				this.obj.x += speed;
-				
-			this.obj.x = parseInt(this.obj.x);
-			this.obj.y = parseInt(this.obj.y);
+				this.obj.addX(speed);
 		});
 	}
 }

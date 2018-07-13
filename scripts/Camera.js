@@ -4,8 +4,7 @@ class Camera {
 	}		
 	update(){
 		var self = this;
-		this.follow.update(c.width / 2 - this.follow.rect.x + this.follow.rect.w / 2, 
-							c.height / 2 - this.follow.rect.y + this.follow.rect.h / 2);	
+		this.follow.update();	
 		var cx = this.follow.rect.x + this.follow.rect.w / 2, cy = this.follow.rect.y + this.follow.rect.h / 2;
 		var	offx = c.width / 2 - cx, offy = c.height / 2 - cy;
 		
@@ -37,6 +36,12 @@ class Camera {
 		currentScene.layers[0].forEach(render);
 		
 		this.follow.rect.draw(offx, offy);
+		currentScene.characters.forEach(function(c){
+			if(c !== self.follow){
+				c.update();
+				c.rect.draw(offx, offy);
+			}
+		});
 	
 		for(var i = 1; i < currentScene.layers.length; i++)
 			currentScene.layers[i].forEach(render);

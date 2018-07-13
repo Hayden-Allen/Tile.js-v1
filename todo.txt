@@ -1,0 +1,5 @@
+- animation sync
+- dynamic light source?
+- scale movement by delta
+- enemy stuck on scene change
+- move max/min sprite to camera

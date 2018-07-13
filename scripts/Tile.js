@@ -3,8 +3,8 @@ class Tile{
 		this.img = new Image();
 		if(src !== "")
 			this.img.src = src;
-		this.x = x;
-		this.y = y;
+		this.x = parseInt(x);
+		this.y = parseInt(y);
 		this.w = tilesize;
 		this.h = tilesize;
 		this.grid = true;
@@ -21,16 +21,34 @@ class Tile{
 		this.wx = this.x * (this.grid ? tilesize : 1);
 		this.wy = this.y * (this.grid ? tilesize : 1);
 		
-		currentScene.add(this);
-		
-		if(this.rigid)
-			currentScene.addRigid(this);
+		if(!extra || (extra && extra.add === undefined)){
+			currentScene.add(this);
+			if(this.rigid)
+				currentScene.addRigid(this);
+		}
 	}
 	draw (offx, offy){
 		if(!this.grid)
 			ctx.drawImage(this.img, this.x + offx, this.y + offy, this.w, this.h);
 		else
 			ctx.drawImage(this.img, this.x * tilesize + offx, this.y * tilesize + offy, this.w, this.h);
+	}
+	addX(x){
+		this.x += parseInt(x);
+		this.wx = parseInt(this.x * (this.grid ? tilesize : 1));
+		//this.x = parseInt(this.x);
+		//this.wx = parseInt(this.wx);
+	}
+	addY(y){
+		this.y += parseInt(y);
+		this.wy = parseInt(this.y * (this.grid ? tilesize : 1));
+		//this.y = parseInt(this.y);
+		//this.wy = parseInt(this.wy);
+	}
+	setSource(src){
+		this.img = new Image();
+		if(src !== "")
+			this.img.src = src;
 	}
 }
 function TileSheet(src, x, y, w, h, extra){

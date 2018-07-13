@@ -11,6 +11,7 @@ function Scene(lightMin){
 	this.doors = [];
 	this.layers = [];
 	this.layers.push([]);
+	this.characters = [];
 	//console.log(this.layers);
 	
 	this.add = function(obj){				

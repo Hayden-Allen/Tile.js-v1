@@ -1,7 +1,7 @@
 var c = document.getElementById("c");
 var ctx = c.getContext("2d");
 
-var tilesize = 40, lightMax = 15;
+var tilesize = 40, lightMax = 15, sqrt2 = Math.sqrt(2);
 
 function angle(x1, y1, x2, y2){
 	var dx = x1 - x2, dy = y1 - y2;
@@ -46,13 +46,17 @@ function debug(target, msg){
 }
 
 var controls = [];
+var uis = [];
 var keys = new BitSet(0);
 
 var scene1 = new Scene(0);
 
 var currentScene = scene1;
-var player = new Player(new Tile("assets/tile/player.png", 640, 320, {grid: false}), 10);
+var player = new Player(new Tile("assets/tile/player.png", 640, 320, {grid: false, add: false}), 10, 6);
+//var enemy = new Enemy(new Tile("assets/tile/enemy.png", 720, 320, {grid: false, rigid: true, add: false}), 5, 2, player);
 var camera = new Camera(player);
+
+var ui = new UI(player);
 
 new TileSheet("assets/tile/grass.png", 0, 0, 30, 16, {rigid: false, 
 				surround: {src: "assets/decoration/tree.png", extra: {rigid: true, w: 2, h: 2}}});			
@@ -79,7 +83,6 @@ new AnimatedTile(3, 1000, "assets/animation/smoke.png", 10, 0, {rigid: false, zi
 
 new AnimatedTileSheet(3, 1000, "assets/animation/water.png", 5, 8, 4, 4, {rigid: true});
 
-
 var scene2 = new Scene(5);
 currentScene = scene2;
 
@@ -104,41 +107,71 @@ scene2.finalize();
 
 currentScene = scene1;
 
-console.log(scene1.layers[0].length);
-
+var cursor = new Cursor(1, 1);
 
 var debugObj = new DebugInfo(0, 0, 0, 0), lastTime = performance.now();
 var minSprites = Number.MAX_SAFE_INTEGER, maxSprites = 0;
 function update(){
 	requestAnimationFrame(update);
 	
-	if(!player.controls.locked){
-		ctx.clearRect(0, 0, c.width, c.height);
-		ctx.fillRect(0, 0, c.width, c.height);
-		
-		var sprites = camera.update();
-		if(sprites < minSprites)
-			minSprites = sprites;
-		if(sprites > maxSprites)
-			maxSprites = sprites;
-		
-		debugObj.update(player.rect.x, player.rect.y, sprites, minSprites, maxSprites, 1000 / (performance.now() - lastTime));
-		lastTime = performance.now();
-		debug("debug", debugObj.string());
-		
-		controls.forEach(function(c){
+	ctx.clearRect(0, 0, c.width, c.height);
+	ctx.fillStyle = "#000000";
+	ctx.fillRect(0, 0, c.width, c.height);
+	
+	var sprites = camera.update();
+	if(sprites < minSprites)
+		minSprites = sprites;
+	if(sprites > maxSprites)
+		maxSprites = sprites;
+	
+	debugObj.update(player.rect.x, player.rect.y, sprites, minSprites, maxSprites, 1000 / (performance.now() - lastTime));
+	lastTime = performance.now();
+	debug("debug", debugObj.string());
+	
+	controls.forEach(function(c){
+		if(!c.locked)
 			c.on(keys);
-		});
+	});
+	uis.forEach(function(u){
+		u.draw();
+	});
+	
+	if(player.controls.locked){
+		ctx.globalAlpha = .75;
+		ctx.fillStyle = "#ffffff";
+		ctx.fillRect(tilesize, tilesize, c.width - tilesize * 2, c.height - tilesize * 2);
+		cursor.draw(0, 0);
 	}
+	console.log(cursor.controls.locked);
 }
 update();
 
+window.onkeypress = function(e){
+	if(e.keyCode == 101)
+		player.health--;
+	if(e.keyCode == 114)
+		player.health++;
+	if(e.keyCode === 113){
+		keys.flip(4);
+		player.controls.locked = !player.controls.locked;
+		cursor.controls.locked = !cursor.controls.locked;
+	}
+}
 window.onkeydown = function(e){
+	//e.preventDefault();
 	switch(e.keyCode){
-	case 87: keys.set(3, true); break;
-	case 65: keys.set(2, true); break;
-	case 83: keys.set(1, true); break;
-	case 68: keys.set(0, true); break;
+	case 87: 
+		keys.set(3, true);
+	break;
+	case 65: 
+		keys.set(2, true); 
+	break;
+	case 83: 
+		keys.set(1, true); 
+	break;
+	case 68: 
+		keys.set(0, true); 
+	break;
 	case 187: 
 		var debug = document.getElementById("debug");
 		if(debug.style.visibility === "hidden")
@@ -149,6 +182,7 @@ window.onkeydown = function(e){
 	}
 }
 window.onkeyup = function(e){
+	//e.preventDefault();
 	switch(e.keyCode){
 	case 87: keys.set(3, false); break;
 	case 65: keys.set(2, false); break;
