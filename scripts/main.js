@@ -142,7 +142,6 @@ function update(){
 		ctx.fillRect(tilesize, tilesize, c.width - tilesize * 2, c.height - tilesize * 2);
 		cursor.draw(0, 0);
 	}
-	console.log(cursor.controls.locked);
 }
 update();
 
