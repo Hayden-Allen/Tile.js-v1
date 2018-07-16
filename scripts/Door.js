@@ -6,5 +6,5 @@ function Door(tile, from, to){
 	this.to.addDoor(this);
 	this.usable = true;
 	
-	currentScene.doors.push(this);
+	Global.currentScene.doors.push(this);
 }

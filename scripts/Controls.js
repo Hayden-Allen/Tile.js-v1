@@ -3,5 +3,5 @@ function Controls(obj, extra, on) {
 	this.extra = extra;
 	this.on = on;
 	this.locked = false;
-	controls.push(this);
+	Global.controls.push(this);
 }

@@ -34,7 +34,7 @@ function Scene(lightMin){
 		}
 		
 		if(obj.extra.lightIntensity)
-			this.lights.push({x: obj.wx / tilesize, y: obj.wy / tilesize, i: obj.extra.lightIntensity});
+			this.lights.push({x: obj.wx / Global.tilesize, y: obj.wy / Global.tilesize, i: obj.extra.lightIntensity});
 	}
 	this.addRigid = function(obj){
 		this.rigids.push(obj);
@@ -49,23 +49,22 @@ function Scene(lightMin){
 		});
 	}
 	this.finalize = function(){
-		for(var i = 0; i <= (this.ymax - this.ymin) / tilesize; i++){
+		for(var i = 0; i <= (this.ymax - this.ymin) / Global.tilesize; i++){
 			this.lightMap.push([]);
-			for(var j = 0; j <= (this.xmax - this.xmin) / tilesize; j++)
+			for(var j = 0; j <= (this.xmax - this.xmin) / Global.tilesize; j++)
 				this.lightMap[i].push(this.lightMin);
 		}
 		
 		function propagate(x, y, i){
-			if(i <= 0 || x < 0 || x >= self.lightMap[0].length || y < 0 || y >= self.lightMap.length || self.lightMap[y][x] < 0 &&
-				Math.abs(self.lightMap[y][x]) > self.lightMin + i)
+			if(i <= 0 || x < 0 || x >= self.lightMap[0].length || y < 0 || y >= self.lightMap.length || (self.lightMap[y][x] < 0 &&
+				Math.abs(self.lightMap[y][x]) > self.lightMin + i))
 				return;
-			
-			//console.log("{" + x + ", " + y + "}, " + (i + self.lightMin));
-			
-			self.lightMap[y][x] = self.lightMin + i;
-			if(self.lightMap[y][x] > lightMax)
-				self.lightMap[y][x] = lightMax;
-			self.lightMap[y][x] *= -1;
+			else{
+				self.lightMap[y][x] = self.lightMin + i;
+				if(self.lightMap[y][x] > Global.lightMax)
+					self.lightMap[y][x] = Global.lightMax;
+				self.lightMap[y][x] *= -1;
+			}
 			
 			propagate(x, y - 1, i - 1);
 			propagate(x, y + 1, i - 1);
@@ -75,15 +74,13 @@ function Scene(lightMin){
 		
 		var self = this;
 		this.lights.forEach(function(l){
-			var y = l.y - self.ymin / tilesize, x = l.x - self.xmin / tilesize;
-			//self.lightMap[y][x] += l.i;
+			var y = l.y - self.ymin / Global.tilesize, x = l.x - self.xmin / Global.tilesize;
 			propagate(x, y, l.i);
-			
 		});
 		for(var i = 0; i < self.lightMap.length; i++)
-				for(var j = 0; j < self.lightMap[i].length; j++)
-					self.lightMap[i][j] = Math.abs(self.lightMap[i][j]);
-		//console.log(this.lightMap);
+			for(var j = 0; j < self.lightMap[i].length; j++)
+				self.lightMap[i][j] = Math.abs(self.lightMap[i][j]);
+			
 		this.doors.forEach(function(d){
 			var index;
 			for(var i = 0; i < self.layers.length && index === undefined; i++)

@@ -1,5 +1,15 @@
-- animation sync
-- dynamic light source?
-- scale movement by delta
-- enemy stuck on scene change
-- move max/min sprite to camera
+FIX
+- spaces between shadows
+- make inventory ui universal size
+- add inventory/items
+- defuzz cursor/smoke.png
+- jitter when in between two rigid bodies
+- enemy follow jitter
+
+NEW
+- items
+- push blocks
+
+?
+- fade transition
+- dynamic light

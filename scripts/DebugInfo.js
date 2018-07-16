@@ -40,7 +40,7 @@ function DebugInfo(){
 		this.avgfps = Math.round(this.totalfps / this.updates);
 	}
 	this.string = function(){
-		return `{ Player: (${this.x}, ${this.y}) | Player Tile: (${parseInt(this.x / tilesize)}, ${parseInt(this.y / tilesize)}) |
+		return `{ Player: (${this.x}, ${this.y}) | Player Tile: (${parseInt(this.x / Global.tilesize)}, ${parseInt(this.y / Global.tilesize)}) |
 				Sprites: ${this.sprites} (min: ${this.minSprites}, max: ${this.maxSprites}) | 
 				FPS: ${this.fps} | Average FPS: ${this.avgfps} (since ${this.avgfpsstart}) }`;
 	}

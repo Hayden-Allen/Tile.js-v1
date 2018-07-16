@@ -5,45 +5,56 @@ class Tile{
 			this.img.src = src;
 		this.x = parseInt(x);
 		this.y = parseInt(y);
-		this.w = tilesize;
-		this.h = tilesize;
+		this.w = Global.tilesize;
+		this.h = Global.tilesize;
 		this.grid = true;
 		this.rigid = false;
 		this.extra = extra ? extra : {};
+		this.children = [];
 		
 		if(extra){
-			this.w = (extra.w ? extra.w : 1) * tilesize;
-			this.h = (extra.h ? extra.h : 1) * tilesize;
+			this.w = (extra.w ? extra.w : 1) * Global.tilesize;
+			this.h = (extra.h ? extra.h : 1) * Global.tilesize;
 			this.rigid = extra.rigid !== undefined ? extra.rigid : false;
 			this.grid = extra.grid !== undefined ? extra.grid : true;
+			this.alpha = extra.alpha !== undefined ? extra.alpha : 1;
 		}
 		
-		this.wx = this.x * (this.grid ? tilesize : 1);
-		this.wy = this.y * (this.grid ? tilesize : 1);
+		this.wx = this.x * (this.grid ? Global.tilesize : 1);
+		this.wy = this.y * (this.grid ? Global.tilesize : 1);
 		
-		if(!extra || (extra && extra.add === undefined)){
-			currentScene.add(this);
-			if(this.rigid)
-				currentScene.addRigid(this);
-		}
+		if(!extra || extra && extra.add !== false)
+			Global.currentScene.add(this);
+		if(this.rigid)
+			Global.currentScene.addRigid(this);
+	}
+	addChild(child){
+		this.children.push({c: child, x: child.x, y: child.y});
+		child.x += this.x;
+		child.y += this.y;
 	}
 	draw (offx, offy){
+		ctx.globalAlpha = this.alpha;
 		if(!this.grid)
 			ctx.drawImage(this.img, this.x + offx, this.y + offy, this.w, this.h);
 		else
-			ctx.drawImage(this.img, this.x * tilesize + offx, this.y * tilesize + offy, this.w, this.h);
+			ctx.drawImage(this.img, this.x * Global.tilesize + offx, this.y * Global.tilesize + offy, this.w, this.h);
+		
+		var self = this;
+		this.children.forEach(function(c){
+			c.c.addX(self.x + c.x - c.c.x);
+			c.c.addY(self.y + c.y - c.c.y);
+		});
 	}
 	addX(x){
-		this.x += parseInt(x);
-		this.wx = parseInt(this.x * (this.grid ? tilesize : 1));
-		//this.x = parseInt(this.x);
-		//this.wx = parseInt(this.wx);
+		this.x += x;
+		this.wx = this.x * (this.grid ? Global.tilesize : 1);
+		
 	}
 	addY(y){
-		this.y += parseInt(y);
-		this.wy = parseInt(this.y * (this.grid ? tilesize : 1));
-		//this.y = parseInt(this.y);
-		//this.wy = parseInt(this.wy);
+		this.y += y;
+		this.wy = this.y * (this.grid ? Global.tilesize : 1);
+		
 	}
 	setSource(src){
 		this.img = new Image();

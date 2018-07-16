@@ -1,8 +1,34 @@
+var Global = {
+	tilesize: 80,
+	lightMax: 15,
+	sqrt2: Math.sqrt(2),
+	controls: [],
+	uis: [],
+	keys: new BitSet(0),
+	currentScene: null,
+	debugObj: debugObj = new DebugInfo(0, 0, 0, 0),
+	delta: 0,
+	paused: false
+}
+
 var c = document.getElementById("c");
+c.width = window.innerWidth - Global.tilesize;
+c.height = window.innerHeight - Global.tilesize;
 var ctx = c.getContext("2d");
 
-var tilesize = 40, lightMax = 15, sqrt2 = Math.sqrt(2);
-
+function rect(x, y, w, h, color, opacity){
+	ctx.fillStyle = color;
+	ctx.globalAlpha = opacity;
+	ctx.fillRect(x, y, w, h);
+}
+function pause(){
+	player.controls.locked = true;
+	Global.paused = true;
+}
+function unpause(){
+	player.controls.locked = false;
+	Global.paused = false;
+}
 function angle(x1, y1, x2, y2){
 	var dx = x1 - x2, dy = y1 - y2;
 	var theta = Math.atan(dy / dx);
@@ -26,37 +52,16 @@ function angle(x1, y1, x2, y2){
 function sleep(ms){
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
-async function fade(time, color){
-	player.controls.locked = true;
-	
-	var step = 1 / time;
-	ctx.fillStyle = color;
-	ctx.globalAlpha = step;
-	
-	while(ctx.globalAlpha + step < 1){
-		ctx.fillRect(0, 0, c.width, c.height);
-		ctx.globalAlpha += step;
-		await sleep(step);
-	}
-	
-	player.controls.locked = false;
-}
 function debug(target, msg){
 	document.getElementById(target).innerHTML = msg;
 }
 
-var controls = [];
-var uis = [];
-var keys = new BitSet(0);
-
 var scene1 = new Scene(0);
 
-var currentScene = scene1;
-var player = new Player(new Tile("assets/tile/player.png", 640, 320, {grid: false, add: false}), 10, 6);
-//var enemy = new Enemy(new Tile("assets/tile/enemy.png", 720, 320, {grid: false, rigid: true, add: false}), 5, 2, player);
+Global.currentScene = scene1;
+var player = new Player(new Tile("assets/tile/player.png", 40 * 7, 40 * 7, {grid: false, add: false}), Global.tilesize * 10, 6);
+var enemy = new Enemy(new Tile("assets/tile/enemy.png", 40 * 7, 40, {grid: false, rigid: true, add: false}), 200, 2);
 var camera = new Camera(player);
-
-var ui = new UI(player);
 
 new TileSheet("assets/tile/grass.png", 0, 0, 30, 16, {rigid: false, 
 				surround: {src: "assets/decoration/tree.png", extra: {rigid: true, w: 2, h: 2}}});			
@@ -81,10 +86,10 @@ new AnimatedTile(3, 250, "assets/animation/fire.png", 22, 12, {rigid: true, ligh
 
 new AnimatedTile(3, 1000, "assets/animation/smoke.png", 10, 0, {rigid: false, zindex: 1});
 
-new AnimatedTileSheet(3, 1000, "assets/animation/water.png", 5, 8, 4, 4, {rigid: true});
+new AnimatedTileSheet(4, 1000, "assets/animation/water.png", 5, 8, 4, 4, {rigid: true});
 
 var scene2 = new Scene(5);
-currentScene = scene2;
+Global.currentScene = scene2;
 
 new TileSheet("assets/tile/stone.png", 0, 1, 12, 6, {rigid: false, surround: {src: "", extra: {rigid: true}}});
 new TileSheet("assets/tile/wood.png", 0, -3, 12, 4, {rigid: false});
@@ -102,46 +107,46 @@ new Tile("assets/decoration/table.png", 0, 1, {rigid: true});
 new Tile("assets/decoration/lamp.png", 0, 0, {lightIntensity: 10});
 
 new Door(new Tile("assets/tile/door.png", 8, 6), scene1, scene2);
+
+var scene3 = new Scene(0);
+Global.currentScene = scene3;
+
+new TileSheet("assets/tile/grass.png", 0, 0, 15, 15, {surround: {src: "assets/decoration/tree.png", extra: {rigid: true, w: 2, h: 2}}});	
+new Tile("assets/decoration/campfire.png", 7, 7, {rigid: true});
+new AnimatedTile(3, 250, "assets/animation/fire.png", 7, 7, {lightIntensity: 15});
+var sword = new Tile("assets/sword.png", Global.tilesize / 2, -Global.tilesize / 2, {w: .5, grid: false, zindex: 1});
+
+player.rect.addChild(sword);
+
 scene1.finalize();
 scene2.finalize();
+scene3.finalize();
 
-currentScene = scene1;
+Global.currentScene = scene1;
 
-var cursor = new Cursor(1, 1);
-
-var debugObj = new DebugInfo(0, 0, 0, 0), lastTime = performance.now();
-var minSprites = Number.MAX_SAFE_INTEGER, maxSprites = 0;
+var last = performance.now(), lastDebug = performance.now();
 function update(){
 	requestAnimationFrame(update);
-	
 	ctx.clearRect(0, 0, c.width, c.height);
-	ctx.fillStyle = "#000000";
-	ctx.fillRect(0, 0, c.width, c.height);
+	rect(0, 0, c.width, c.height, "#000000", 1);
 	
-	var sprites = camera.update();
-	if(sprites < minSprites)
-		minSprites = sprites;
-	if(sprites > maxSprites)
-		maxSprites = sprites;
+	var now = performance.now();
+	Global.delta = now - last;
+	last = now;
 	
-	debugObj.update(player.rect.x, player.rect.y, sprites, minSprites, maxSprites, 1000 / (performance.now() - lastTime));
-	lastTime = performance.now();
+	camera.update(now);
+	
+	debugObj.update(player.rect.x.toFixed(2), player.rect.y.toFixed(2), camera.count, camera.minSprites, camera.maxSprites, 1000 / (performance.now() - lastDebug));
+	lastDebug = performance.now();
 	debug("debug", debugObj.string());
 	
-	controls.forEach(function(c){
+	Global.controls.forEach(function(c){
 		if(!c.locked)
-			c.on(keys);
+			c.on(Global.keys);
 	});
-	uis.forEach(function(u){
+	Global.uis.forEach(function(u){
 		u.draw();
 	});
-	
-	if(player.controls.locked){
-		ctx.globalAlpha = .75;
-		ctx.fillStyle = "#ffffff";
-		ctx.fillRect(tilesize, tilesize, c.width - tilesize * 2, c.height - tilesize * 2);
-		cursor.draw(0, 0);
-	}
 }
 update();
 
@@ -151,26 +156,18 @@ window.onkeypress = function(e){
 	if(e.keyCode == 114)
 		player.health++;
 	if(e.keyCode === 113){
-		keys.flip(4);
-		player.controls.locked = !player.controls.locked;
-		cursor.controls.locked = !cursor.controls.locked;
+		Global.keys.flip(4);
+		Global.paused ? unpause() : pause();
+		player.ui.inventorySwitch();
 	}
 }
 window.onkeydown = function(e){
 	//e.preventDefault();
 	switch(e.keyCode){
-	case 87: 
-		keys.set(3, true);
-	break;
-	case 65: 
-		keys.set(2, true); 
-	break;
-	case 83: 
-		keys.set(1, true); 
-	break;
-	case 68: 
-		keys.set(0, true); 
-	break;
+	case 87: Global.keys.set(3, true); break;
+	case 65: Global.keys.set(2, true); break;
+	case 83: Global.keys.set(1, true); break;
+	case 68: Global.keys.set(0, true); break;
 	case 187: 
 		var debug = document.getElementById("debug");
 		if(debug.style.visibility === "hidden")
@@ -183,9 +180,9 @@ window.onkeydown = function(e){
 window.onkeyup = function(e){
 	//e.preventDefault();
 	switch(e.keyCode){
-	case 87: keys.set(3, false); break;
-	case 65: keys.set(2, false); break;
-	case 83: keys.set(1, false); break;
-	case 68: keys.set(0, false); break;
+	case 87: Global.keys.set(3, false); break;
+	case 65: Global.keys.set(2, false); break;
+	case 83: Global.keys.set(1, false); break;
+	case 68: Global.keys.set(0, false); break;
 	}
 }
