@@ -16,7 +16,7 @@ class Character {
 				var slope = angle(x + w / 2, y + h / 2, rx + rw / 2, ry + rh / 2);
 				
 				if((slope.deg > 45 && slope.deg < 135) && x + w > rx && x < rx + rw && y + h > ry && y + h < ry + rh / 2)
-					self.rect.addY(ry - h - self.rect.y);
+					self.rect.y = ry - h;
 				if((slope.deg > 135 && slope.deg < 225) && y + h > ry && y < ry + rh && x + w > rx && x + w < rx + rw / 2)
 					self.rect.x = rx - w;
 				if((slope.deg > 225 && slope.deg < 315) && x + w > rx && x < rx + rw && y < ry + rh && y > ry + rh / 2)

@@ -1,3 +1,6 @@
+LIGHTMAP EFFICIENCY
+
+
 FIX
 - spaces between shadows
 - make inventory ui universal size
@@ -7,6 +10,7 @@ FIX
 - enemy follow jitter
 
 NEW
+- add animated UIElement
 - items
 - push blocks
 

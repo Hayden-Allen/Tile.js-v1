@@ -21,6 +21,9 @@ class Camera {
 			if(Global.currentScene.ymax - cy < c.height / 2)
 				offy = -Global.currentScene.ymax + c.height;
 		}
+		
+		offx = Math.round(offx);
+		offy = Math.round(offy);
 							
 		var render = function(o){
 			if(o instanceof AnimatedTile)
@@ -40,7 +43,8 @@ class Camera {
 		var start = performance.now(), count = 0;
 		Global.currentScene.layers[0].forEach(render);
 		
-		this.follow.rect.draw(offx, offy);
+		this.follow.draw(offx, offy);
+		
 		Global.currentScene.characters.forEach(function(c){
 			if(c !== self.follow){
 				c.update();
@@ -54,8 +58,8 @@ class Camera {
 		ctx.fillStyle = "#000000";
 		for(var i = 0; i < Global.currentScene.lightMap.length; i++)
 			for(var j = 0; j < Global.currentScene.lightMap[i].length; j++)
-				rect(Global.currentScene.xmin + j * Global.tilesize + offx - .225, Global.currentScene.ymin + i * Global.tilesize + offy - .225, 
-					Global.tilesize + .45, Global.tilesize + .45, "#000000", 1 - (Global.currentScene.lightMap[i][j] / Global.lightMax));
+				rect(Global.currentScene.xmin + j * Global.tilesize + offx - 0, Global.currentScene.ymin + i * Global.tilesize + offy - 0, 
+					Global.tilesize + 0, Global.tilesize + 0, "#000000", 1 - (Global.currentScene.lightMap[i][j] / Global.lightMax));
 		ctx.globalAlpha = 1;
 		
 		var self = this;

@@ -44,6 +44,8 @@ class Tile{
 		this.children.forEach(function(c){
 			c.c.addX(self.x + c.x - c.c.x);
 			c.c.addY(self.y + c.y - c.c.y);
+			c.c.draw(offx, offy);
+			//console.log(c);
 		});
 	}
 	addX(x){

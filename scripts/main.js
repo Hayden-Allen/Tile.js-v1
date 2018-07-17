@@ -1,10 +1,11 @@
 var Global = {
-	tilesize: 80,
+	tilesize: 40,
 	lightMax: 15,
 	sqrt2: Math.sqrt(2),
 	controls: [],
 	uis: [],
 	keys: new BitSet(0),
+	recentKey: new BitSet(0),
 	currentScene: null,
 	debugObj: debugObj = new DebugInfo(0, 0, 0, 0),
 	delta: 0,
@@ -60,7 +61,7 @@ var scene1 = new Scene(0);
 
 Global.currentScene = scene1;
 var player = new Player(new Tile("assets/tile/player.png", 40 * 7, 40 * 7, {grid: false, add: false}), Global.tilesize * 10, 6);
-var enemy = new Enemy(new Tile("assets/tile/enemy.png", 40 * 7, 40, {grid: false, rigid: true, add: false}), 200, 2);
+//var enemy = new Enemy(new Tile("assets/tile/enemy.png", 40 * 7, 40, {grid: false, rigid: true, add: false}), 200, 2);
 var camera = new Camera(player);
 
 new TileSheet("assets/tile/grass.png", 0, 0, 30, 16, {rigid: false, 
@@ -108,21 +109,30 @@ new Tile("assets/decoration/lamp.png", 0, 0, {lightIntensity: 10});
 
 new Door(new Tile("assets/tile/door.png", 8, 6), scene1, scene2);
 
-var scene3 = new Scene(0);
+var scene3 = new Scene(14);
 Global.currentScene = scene3;
 
-new TileSheet("assets/tile/grass.png", 0, 0, 15, 15, {surround: {src: "assets/decoration/tree.png", extra: {rigid: true, w: 2, h: 2}}});	
-new Tile("assets/decoration/campfire.png", 7, 7, {rigid: true});
-new AnimatedTile(3, 250, "assets/animation/fire.png", 7, 7, {lightIntensity: 15});
-var sword = new Tile("assets/sword.png", Global.tilesize / 2, -Global.tilesize / 2, {w: .5, grid: false, zindex: 1});
+new TileSheet("assets/tile/grass.png", 0, 0, 29, 29, {surround: {src: "assets/decoration/tree.png", extra: {rigid: true, w: 2, h: 2}}});	
+//new Tile("assets/decoration/campfire.png", 7, 7, {rigid: true});
+new AnimatedTile(3, 250, "assets/animation/fire.png", 14, 14, {lightIntensity: 15});
 
+
+var scene4 = new Scene(6);
+Global.currentScene = scene4;
+
+new TileSheet("assets/tile/grass.png", 0, 0, 29, 29, {surround: {src: "assets/decoration/tree.png", extra: {rigid: true, w: 2, h: 2}}});	
+//new Tile("assets/decoration/campfire.png", 7, 7, {rigid: true});
+new AnimatedTile(3, 250, "assets/animation/fire.png", 14, 14, {lightIntensity: 15});
+
+var sword = new Tile("assets/sword.png", Global.tilesize / 2, -Global.tilesize / 2, {w: .5, grid: false, zindex: 1, add: false});
 player.rect.addChild(sword);
 
-scene1.finalize();
-scene2.finalize();
+//scene1.finalize();
+//scene2.finalize();
 scene3.finalize();
+scene4.finalize();
 
-Global.currentScene = scene1;
+//Global.currentScene = scene1;
 
 var last = performance.now(), lastDebug = performance.now();
 function update(){
@@ -164,10 +174,22 @@ window.onkeypress = function(e){
 window.onkeydown = function(e){
 	//e.preventDefault();
 	switch(e.keyCode){
-	case 87: Global.keys.set(3, true); break;
-	case 65: Global.keys.set(2, true); break;
-	case 83: Global.keys.set(1, true); break;
-	case 68: Global.keys.set(0, true); break;
+	case 87: 
+		Global.keys.set(3, true);
+		Global.recentKey.zeroSet(3, true);
+	break;
+	case 65: 
+		Global.keys.set(2, true);
+		Global.recentKey.zeroSet(2, true);
+	break;
+	case 83:
+		Global.keys.set(1, true);
+		Global.recentKey.zeroSet(1, true);
+	break;
+	case 68: 
+		Global.keys.set(0, true);
+		Global.recentKey.zeroSet(0, true);
+	break;
 	case 187: 
 		var debug = document.getElementById("debug");
 		if(debug.style.visibility === "hidden")

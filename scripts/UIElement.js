@@ -1,10 +1,9 @@
 function UIElement(src, x, y, extra){
+	this.visible = true;
 	if(extra){
 		extra.add = false;
 		if(extra.visible)
 			this.visible = extra.visible;
-		else
-			this.visible = true;
 	}
 	else
 		extra = {add: false};

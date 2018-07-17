@@ -14,4 +14,8 @@ function BitSet(value) {
 	this.log2 = function(){
 		return Math.log2(this.value) === parseInt(Math.log2(this.value));
 	}
+	this.zeroSet = function(index, val){
+		this.value = value;
+		this.set(index, val);
+	}
 }

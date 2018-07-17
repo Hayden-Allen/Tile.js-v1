@@ -55,17 +55,23 @@ function Scene(lightMin){
 				this.lightMap[i].push(this.lightMin);
 		}
 		
+		var count = 0;
 		function propagate(x, y, i){
-			if(i <= 0 || x < 0 || x >= self.lightMap[0].length || y < 0 || y >= self.lightMap.length || (self.lightMap[y][x] < 0 &&
-				Math.abs(self.lightMap[y][x]) > self.lightMin + i))
+			if(i <= 0 || (x < 0 || x >= self.lightMap[0].length || y < 0 || y >= self.lightMap.length) || 
+				(Math.abs(self.lightMap[y][x]) >= self.lightMin + i || Math.abs(self.lightMap[y][x] >= Global.lightMax)))
 				return;
-			else{
-				self.lightMap[y][x] = self.lightMin + i;
-				if(self.lightMap[y][x] > Global.lightMax)
-					self.lightMap[y][x] = Global.lightMax;
-				self.lightMap[y][x] *= -1;
-			}
 			
+			count++;
+			
+			var first = self.lightMap[y][x];
+			self.lightMap[y][x] = self.lightMin + i;
+			if(self.lightMap[y][x] > Global.lightMax)
+				self.lightMap[y][x] = Global.lightMax;
+			self.lightMap[y][x] *= -1;
+			
+			//if(Math.abs(first) === Math.abs(self.lightMap[y][x]))
+				//console.log(Math.abs(first) >= Global.lightMax);
+						
 			propagate(x, y - 1, i - 1);
 			propagate(x, y + 1, i - 1);
 			propagate(x - 1, y, i - 1);
@@ -73,10 +79,14 @@ function Scene(lightMin){
 		}
 		
 		var self = this;
-		this.lights.forEach(function(l){
-			var y = l.y - self.ymin / Global.tilesize, x = l.x - self.xmin / Global.tilesize;
-			propagate(x, y, l.i);
-		});
+		if(this.lightMin != Global.lightMax){
+			this.lights.forEach(function(l){
+				var y = l.y - self.ymin / Global.tilesize, x = l.x - self.xmin / Global.tilesize;
+				propagate(x, y, l.i);
+			});
+		}
+		console.log(this.lights.length + ", " + count);
+		
 		for(var i = 0; i < self.lightMap.length; i++)
 			for(var j = 0; j < self.lightMap[i].length; j++)
 				self.lightMap[i][j] = Math.abs(self.lightMap[i][j]);
