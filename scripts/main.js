@@ -5,6 +5,12 @@ var Global = {
 	controls: [],
 	uis: [],
 	keys: new BitSet(0),
+	/*+-+-+-+-+-+-+-+-+
+	 *|7|6|5|4|3|2|1|0|
+	 *+-+-+-+-+-+-+-+-+
+	 *| | |_|Q|W|A|S|D|
+	 *+-+-+-+-+-+-+-+-+
+	 */
 	recentKey: new BitSet(0),
 	currentScene: null,
 	debugObj: debugObj = new DebugInfo(0, 0, 0, 0),
@@ -60,7 +66,25 @@ function debug(target, msg){
 var scene1 = new Scene(0);
 
 Global.currentScene = scene1;
-var player = new Player(new Tile("assets/tile/player.png", 40 * 7, 40 * 7, {grid: false, add: false}), Global.tilesize * 10, 6);
+
+var sword = new Item(new Tile("assets/item/sword.png", Global.tilesize / 2, -Global.tilesize / 2, {w: .5, grid: false, zindex: 1, add: false}),
+	{atk: 5, def: 0, spd: 0, hp: 0, time: 250}, "Sword", 
+	async function(){
+		if(this.canAttack){
+			this.canAttack = false;
+			
+			player.rect.children[0].y -= 15;
+			new Projectile("assets/tile/stone.png", player.rect.wx, player.rect.wy, 10, 
+				{x: (player.direction % 2) * (2 - player.direction), y: (1 - player.direction % 2) * (player.direction - 1)});
+			await sleep(this.stats.time);
+			player.rect.children[0].y += 15;
+			
+			this.canAttack = true;
+		}
+	});
+	
+var player = new Player(new Tile("assets/tile/player.png", 40 * 7, 40 * 7, {grid: false, add: false}), Global.tilesize * 10, 6,
+	new Inventory(5, [sword]));
 //var enemy = new Enemy(new Tile("assets/tile/enemy.png", 40 * 7, 40, {grid: false, rigid: true, add: false}), 200, 2);
 var camera = new Camera(player);
 
@@ -80,10 +104,11 @@ new Tile("assets/tile/wood_log.png", 11, 4, {zindex: 1});
 new Tile("assets/decoration/campfire.png", 9, 8);
 new Tile("assets/decoration/campfire.png", 4, 10);
 
-new AnimatedTile(3, 250, "assets/animation/fire.png", 9, 8, {rigid: true, lightIntensity: 15});
-new AnimatedTile(3, 250, "assets/animation/fire.png", 4, 10, {rigid: true, lightIntensity: 15});
-new AnimatedTile(3, 250, "assets/animation/fire.png", 22, 4, {rigid: true, lightIntensity: 15});
-new AnimatedTile(3, 250, "assets/animation/fire.png", 22, 12, {rigid: true, lightIntensity: 15});
+new AnimatedTile(3, 250, "assets/animation/fire.png", 9, 8, {rigid: true, lightIntensity: 13});
+new AnimatedTile(3, 250, "assets/animation/fire.png", 4, 10, {rigid: true, lightIntensity: 13});
+new AnimatedTile(3, 250, "assets/animation/fire.png", 22, 4, {rigid: true, lightIntensity: 13});
+new AnimatedTile(3, 250, "assets/animation/fire.png", 22, 12, {rigid: true, lightIntensity: 13});
+new AnimatedTile(3, 250, "assets/animation/fire.png", 17, 8, {rigid: true, lightIntensity: 13});
 
 new AnimatedTile(3, 1000, "assets/animation/smoke.png", 10, 0, {rigid: false, zindex: 1});
 
@@ -109,30 +134,14 @@ new Tile("assets/decoration/lamp.png", 0, 0, {lightIntensity: 10});
 
 new Door(new Tile("assets/tile/door.png", 8, 6), scene1, scene2);
 
-var scene3 = new Scene(14);
-Global.currentScene = scene3;
+scene1.finalize();
+scene2.finalize();
 
-new TileSheet("assets/tile/grass.png", 0, 0, 29, 29, {surround: {src: "assets/decoration/tree.png", extra: {rigid: true, w: 2, h: 2}}});	
-//new Tile("assets/decoration/campfire.png", 7, 7, {rigid: true});
-new AnimatedTile(3, 250, "assets/animation/fire.png", 14, 14, {lightIntensity: 15});
+Global.currentScene = scene1;
 
-
-var scene4 = new Scene(6);
-Global.currentScene = scene4;
-
-new TileSheet("assets/tile/grass.png", 0, 0, 29, 29, {surround: {src: "assets/decoration/tree.png", extra: {rigid: true, w: 2, h: 2}}});	
-//new Tile("assets/decoration/campfire.png", 7, 7, {rigid: true});
-new AnimatedTile(3, 250, "assets/animation/fire.png", 14, 14, {lightIntensity: 15});
-
-var sword = new Tile("assets/sword.png", Global.tilesize / 2, -Global.tilesize / 2, {w: .5, grid: false, zindex: 1, add: false});
-player.rect.addChild(sword);
-
-//scene1.finalize();
-//scene2.finalize();
-scene3.finalize();
-scene4.finalize();
-
-//Global.currentScene = scene1;
+scene1.layers[1].forEach(function(o){
+	console.log(o);
+});
 
 var last = performance.now(), lastDebug = performance.now();
 function update(){
@@ -161,14 +170,16 @@ function update(){
 update();
 
 window.onkeypress = function(e){
-	if(e.keyCode == 101)
-		player.health--;
-	if(e.keyCode == 114)
-		player.health++;
-	if(e.keyCode === 113){
+	e.preventDefault();
+	switch(e.keyCode){
+	case 101: player.health--; break;
+	case 114: player.health++; break;
+	case 113:
 		Global.keys.flip(4);
 		Global.paused ? unpause() : pause();
 		player.ui.inventorySwitch();
+	break;
+	case 32: Global.keys.set(5, true); break;
 	}
 }
 window.onkeydown = function(e){

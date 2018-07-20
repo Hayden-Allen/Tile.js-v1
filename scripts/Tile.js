@@ -33,6 +33,15 @@ class Tile{
 		child.x += this.x;
 		child.y += this.y;
 	}
+	setFirstChild(child){	//reserved as equipped item slot for Characters
+		var obj = {c: child, x: child.x, y: child.y};
+		if(this.children.length < 1)
+			this.children.push(obj);
+		else
+			this.children[0] = obj;
+		child.x += this.x;
+		child.y += this.y;
+	}
 	draw (offx, offy){
 		ctx.globalAlpha = this.alpha;
 		if(!this.grid)
@@ -45,7 +54,6 @@ class Tile{
 			c.c.addX(self.x + c.x - c.c.x);
 			c.c.addY(self.y + c.y - c.c.y);
 			c.c.draw(offx, offy);
-			//console.log(c);
 		});
 	}
 	addX(x){

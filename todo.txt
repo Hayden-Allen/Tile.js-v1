@@ -1,19 +1,18 @@
-LIGHTMAP EFFICIENCY
-
-
 FIX
-- spaces between shadows
 - make inventory ui universal size
-- add inventory/items
-- defuzz cursor/smoke.png
 - jitter when in between two rigid bodies
 - enemy follow jitter
+- Animated UIElement updating when not visible
+- player rotation when moving 2 directions
+- better way to handle projectiles
 
 NEW
-- add animated UIElement
-- items
+- combat
 - push blocks
+- ricochet projectiles (2d movement required)
 
 ?
+- attack while moving
 - fade transition
 - dynamic light
+- multiple equipped items

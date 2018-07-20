@@ -1,10 +1,11 @@
 class Player extends Character {
-	constructor(tile, speed, health){
-		super(tile, speed, health);
+	constructor(tile, speed, health, inventory){
+		super(tile, speed, health, inventory);
 		
 		this.direction = 0;
 		this.ui = new CharacterUI(this);
 		
+		var self = this;
 		this.controls = new Controls(this.rect, {player: this, speed: this.speed}, function(keys){
 			var speed = this.extra.speed;
 			if(!keys.log2())
@@ -32,6 +33,12 @@ class Player extends Character {
 			
 			this.obj.x = Math.round(this.obj.x);
 			this.obj.y = Math.round(this.obj.y);
+			
+			if(keys.at(5)){
+				if(self.currentItem)
+					self.currentItem.attack();
+				keys.flip(5);
+			}
 		});
 	}
 	draw(offx, offy){

@@ -1,12 +1,12 @@
 function UIElement(src, x, y, extra){
 	this.visible = true;
 	if(extra){
-		extra.add = false;
+		extra.add = true;
 		if(extra.visible)
 			this.visible = extra.visible;
 	}
 	else
-		extra = {add: false};
+		extra = {add: true};
 	
 	if(extra.frames && extra.time)
 		this.tile = new AnimatedTile(extra.frames, extra.time, src, x, y, extra);

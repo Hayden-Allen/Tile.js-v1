@@ -41,6 +41,29 @@ class Camera {
 		}
 		
 		var start = performance.now(), count = 0;
+		
+		for(var i = 0; i < Global.currentScene.projectiles.length; i++){
+			var p = Global.currentScene.projectiles[i];
+			
+			p.update();
+			if(p.tile.y <= Global.currentScene.ymin || p.tile.y + p.tile.h >= Global.currentScene.ymax || 
+				p.tile.x <= Global.currentScene.xmin || p.tile.x + p.tile.w >= Global.currentScene.xmax){
+					var layer = Global.currentScene.layers[Global.currentScene.layers.length - 1];
+					for(var j = 0; j < layer.length; j++){
+						if(layer[j] === p.tile){
+							layer.splice(j, 1);
+							break;
+						}
+					}
+					var projectiles = Global.currentScene.projectiles;
+					for(var j = 0; j < projectiles.length; j++){
+						if(projectiles[j] === p){
+							projectiles.splice(j, 1);
+							break;
+						}
+					}
+			}
+		}
 		Global.currentScene.layers[0].forEach(render);
 		
 		this.follow.draw(offx, offy);
@@ -48,7 +71,7 @@ class Camera {
 		Global.currentScene.characters.forEach(function(c){
 			if(c !== self.follow){
 				c.update();
-				c.rect.draw(offx, offy);
+				c.draw(offx, offy);
 			}
 		});
 	

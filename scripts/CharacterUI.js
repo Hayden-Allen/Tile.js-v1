@@ -5,7 +5,7 @@ function CharacterUI(target){
 	this.elements = [];
 	this.lastHeart = 0;
 	
-	this.cursor = new UIElement("assets/animation/cursor.png", 1, 1, {add: false, frames: 2, time: 500});
+	this.cursor = new UIElement("assets/ui/cursor.png", 1, 1, {frames: 2, time: 500});
 	this.cursor.controls = new Controls(this.cursor.tile, {last: performance.now()}, function(keys){
 			var now = performance.now();
 			if(now - this.extra.last > 100){
@@ -24,13 +24,13 @@ function CharacterUI(target){
 	this.showInventory = false;
 	
 	for(var i = 0; i < this.maxHealth / 2; i++)
-		this.elements.push(new UIElement("assets/heart_empty.png", c.width - (i + 1) * Global.tilesize / 2, 0, {grid: false, w: .5, h: .5}));
+		this.elements.push(new UIElement("assets/ui/heart_empty.png", c.width - (i + 1) * Global.tilesize / 2, 0, {grid: false, w: .5, h: .5}));
 	for(var i = 0; i < parseInt(this.health / 2); i++){
-		this.elements[i].tile.setSource("assets/heart_full.png");
+		this.elements[i].tile.setSource("assets/ui/heart_full.png");
 		this.lastHeart += 2;
 	}
 	if(this.health / 2 !== parseInt(this.health / 2)){
-		this.elements[parseInt(this.health / 2)].setSource("assets/heart_half.png");
+		this.elements[parseInt(this.health / 2)].setSource("assets/ui/heart_half.png");
 		this.lastHeart++;
 	}
 	
@@ -45,7 +45,7 @@ function CharacterUI(target){
 		if(target.maxHealth != this.maxHealth)
 			this.maxHealth = target.maxHealth;
 		while(this.maxHealth / 2 > this.elements.length)
-			this.elements.push(new UIElement("assets/heart_empty.png", c.width - (i + 1) * tilesize, 0, {grid: false, add: false}));
+			this.elements.push(new UIElement("assets/ui/heart_empty.png", c.width - (i + 1) * tilesize, 0, {grid: false, add: false}));
 		while(this.maxHealth / 2 < this.elements.length)
 			this.elements.pop();
 		
@@ -54,9 +54,9 @@ function CharacterUI(target){
 		
 		while(this.health != target.health){
 			if(this.lastHeart % 2 == 1)
-					this.elements[parseInt(this.lastHeart / 2)].tile.setSource(direction < 0 ? "assets/heart_empty.png" : "assets/heart_full.png");
+					this.elements[parseInt(this.lastHeart / 2)].tile.setSource(direction < 0 ? "assets/ui/heart_empty.png" : "assets/ui/heart_full.png");
 				else
-					this.elements[this.lastHeart / 2 - (direction < 0 ? 1 : 0)].tile.setSource("assets/heart_half.png");
+					this.elements[this.lastHeart / 2 - (direction < 0 ? 1 : 0)].tile.setSource("assets/ui/heart_half.png");
 			
 			this.lastHeart += direction;
 			this.health += direction;
@@ -68,6 +68,17 @@ function CharacterUI(target){
 		
 		if(this.showInventory){
 			rect(Global.tilesize, Global.tilesize, c.width - Global.tilesize * 2, c.height - Global.tilesize * 2, "#ffffff", .75);
+			
+			var x = Global.tilesize * 1.25, y = Global.tilesize;
+			this.target.inventory.items.forEach(function(i){
+				i.tile.draw(x - i.tile.wx, y - i.tile.wy);
+				x += Global.tilesize;
+				if(x >= c.width / Global.tilesize * 2){
+					x = Global.tilesize * 1.25;
+					y += Global.tilesize;
+				}
+			});
+			
 			this.cursor.draw(0, 0);
 		}
 	}

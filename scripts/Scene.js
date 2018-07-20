@@ -3,7 +3,7 @@ function Scene(lightMin){
 	this.xmax;
 	this.ymin;
 	this.ymax;
-	this.lightMin = lightMin;
+	this.lightMin = Math.min(Global.lightMax, lightMin);
 	this.lightMap = [];
 	this.lights = [];
 	
@@ -12,9 +12,9 @@ function Scene(lightMin){
 	this.layers = [];
 	this.layers.push([]);
 	this.characters = [];
-	//console.log(this.layers);
+	this.projectiles = [];
 	
-	this.add = function(obj){				
+	this.add = function(obj){
 		if(this.ymin === undefined || obj.wy < this.ymin)
 			this.ymin = obj.wy;
 		if(this.ymax === undefined || obj.wy + obj.h > this.ymax)
@@ -22,12 +22,14 @@ function Scene(lightMin){
 		if(this.xmin === undefined || obj.wx < this.xmin)
 			this.xmin = obj.wx;
 		if(this.xmax === undefined || obj.wx + obj.w > this.xmax)
-			this.xmax = obj.wx + obj.w;		
-			
+			this.xmax = obj.wx + obj.w;
+		
 		var zindex = obj.extra.zindex;
 		if(!zindex)
 			this.layers[0].push(obj);
 		else{
+			if(zindex == -1)
+				zindex = this.layers.length - 1;
 			while(zindex > this.layers.length - 1)
 				this.layers.push([]);
 			this.layers[zindex].push(obj);
@@ -57,20 +59,13 @@ function Scene(lightMin){
 		
 		var count = 0;
 		function propagate(x, y, i){
-			if(i <= 0 || (x < 0 || x >= self.lightMap[0].length || y < 0 || y >= self.lightMap.length) || 
-				(Math.abs(self.lightMap[y][x]) >= self.lightMin + i || Math.abs(self.lightMap[y][x] >= Global.lightMax)))
+			var newLight = Math.min(Global.lightMax, i);
+			if(i <= 0 || (x < 0 || x >= self.lightMap[0].length || y < 0 || y >= self.lightMap.length) ||
+				Math.abs(self.lightMap[y][x]) >= newLight)
 				return;
-			
+						
 			count++;
-			
-			var first = self.lightMap[y][x];
-			self.lightMap[y][x] = self.lightMin + i;
-			if(self.lightMap[y][x] > Global.lightMax)
-				self.lightMap[y][x] = Global.lightMax;
-			self.lightMap[y][x] *= -1;
-			
-			//if(Math.abs(first) === Math.abs(self.lightMap[y][x]))
-				//console.log(Math.abs(first) >= Global.lightMax);
+			self.lightMap[y][x] = newLight;
 						
 			propagate(x, y - 1, i - 1);
 			propagate(x, y + 1, i - 1);
@@ -82,7 +77,7 @@ function Scene(lightMin){
 		if(this.lightMin != Global.lightMax){
 			this.lights.forEach(function(l){
 				var y = l.y - self.ymin / Global.tilesize, x = l.x - self.xmin / Global.tilesize;
-				propagate(x, y, l.i);
+				propagate(x, y, Math.min(Global.lightMax, l.i + self.lightMin));
 			});
 		}
 		console.log(this.lights.length + ", " + count);

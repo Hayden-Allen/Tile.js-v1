@@ -23,7 +23,7 @@ fire
 grass
 	dark - 1f7a1f
 	light - 2aa22a
-player
+player/heart
 	dark - b30000
 	light - e60000
 smoke - f2f2f2
@@ -38,11 +38,3 @@ door
 	knob - ffcc00
 	dark - 664400
 	light - 996600
-	
-resource planner/material planner/(master) production scheduler
-	- 1-4 yrs manufacturing environment
-	- completed undergrad (4 years)
-	- $65k max
-	- sap/!(excel, access)
-	- local
-	- inventory analysis

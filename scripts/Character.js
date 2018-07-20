@@ -1,10 +1,14 @@
 class Character {
-	constructor(tile, speed, health, scene){
+	constructor(tile, speed, health, inventory, scene){
 		this.scene = scene ? scene : Global.currentScene;
 		this.rect = tile;
 		this.speed = speed;
 		this.health = health;
 		this.maxHealth = health;
+		this.inventory = inventory ? inventory : new Inventory(5);
+		this.currentItem;
+		this.setCurrentItem(inventory.items[0]);
+		
 		Global.currentScene.characters.push(this);
 	}
 	update(){
@@ -31,5 +35,12 @@ class Character {
 			this.health = 0;
 			console.log("DEAD");
 		}
+	}
+	draw(offx, offy){
+		this.rect.draw(offx, offy);
+	}
+	setCurrentItem(i){
+		this.rect.setFirstChild(i.tile);
+		this.currentItem = i;
 	}
 }
